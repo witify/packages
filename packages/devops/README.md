@@ -92,6 +92,8 @@ class HealthServiceProvider extends ServiceProvider
 
 Keep only the checks that apply. An application without a queue worker has no `QueueCheck`, an application without Redis has no `RedisCheck`. The portal displays whatever the application reports.
 
+`BackupsCheck::onDisk()` builds the disk at boot, so an S3 disk without credentials crashes every request. Register the backup checks only when the disk is configured, for example `if (filled(config('filesystems.disks.backup.region')))`.
+
 Register the provider:
 
 - Laravel 8 to 10: add `App\Providers\HealthServiceProvider::class` to the `providers` array of `config/app.php`.
