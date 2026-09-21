@@ -1,0 +1,44 @@
+name: Split
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+jobs:
+  split:
+    name: ${{ matrix.package }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: devops
+            key: SPLIT_KEY_DEVOPS
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Load the deploy key of witify/${{ matrix.package }}
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets[matrix.key] }}
+
+      - name: Push packages/${{ matrix.package }} to witify/${{ matrix.package }}
+        env:
+          PACKAGE: ${{ matrix.package }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          remote="git@github.com:witify/${PACKAGE}.git"
+          split_sha=$(git subtree split --prefix="packages/${PACKAGE}" HEAD)
+
+          git push --force "$remote" "${split_sha}:refs/heads/main"
+
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            git push "$remote" "${split_sha}:refs/tags/${GITHUB_REF#refs/tags/}"
+          fi

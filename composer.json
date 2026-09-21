@@ -1,0 +1,41 @@
+{
+    "name": "witify/packages",
+    "description": "Monorepo of the Witify Composer packages. Each packages/* directory is split into its own read-only repository.",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": "^8.4"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.8",
+        "laravel/pint": "^1.13",
+        "orchestra/testbench": "^10.0",
+        "phpunit/phpunit": "^11.5",
+        "witify/devops": "@dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "autoload-dev": {
+        "psr-4": {
+            "Witify\\Devops\\Tests\\": "packages/devops/tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "phpunit",
+        "lint": "pint",
+        "lint:test": "pint --test",
+        "analyse": "phpstan analyse --memory-limit=1G"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

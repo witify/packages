@@ -1,0 +1,11 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - packages/devops/src
+
+    level: 6
+
+    # Every package must run on the oldest PHP its composer.json allows.
+    phpVersion: 80000
