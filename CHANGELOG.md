@@ -2,6 +2,12 @@
 
 All notable changes to the packages are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and every package shares the same version number.
 
+## [1.1.1] - 2026-09-22
+
+### Changed
+
+- `witify/devops`: the developer console now matches the Sprintify console (icons, cards, texts) and shows the Sentry event id after a test exception.
+
 ## [1.1.0] - 2026-09-22
 
 ### Added

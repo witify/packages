@@ -2,15 +2,15 @@
 
 return [
     'title' => 'Console développeur',
-    'subtitle' => 'Outils de surveillance et état de l\'application.',
+    'subtitle' => 'Page réservée aux développeurs pour surveiller et tester l\'application.',
     'tools' => [
         'health' => [
             'label' => 'Laravel Health',
-            'description' => 'Derniers résultats des vérifications de santé.',
+            'description' => 'Vérifier la santé de l\'application Laravel.',
         ],
         'horizon' => [
             'label' => 'Laravel Horizon',
-            'description' => 'Files d\'attente, workers et tâches en échec.',
+            'description' => 'Surveiller les files d\'attente de l\'application.',
         ],
         'pulse' => [
             'label' => 'Laravel Pulse',
@@ -18,11 +18,11 @@ return [
         ],
         'telescope' => [
             'label' => 'Laravel Telescope',
-            'description' => 'Requêtes, requêtes SQL, tâches et exceptions en détail.',
+            'description' => 'Inspecter les requêtes, requêtes SQL, tâches et exceptions.',
         ],
         'logs' => [
             'label' => 'Journaux',
-            'description' => 'Fichiers de journal de l\'application.',
+            'description' => 'Consulter les journaux de l\'application.',
         ],
     ],
     'application' => [
@@ -54,8 +54,9 @@ return [
     ],
     'sentry' => [
         'title' => 'Test Sentry',
-        'description' => 'Envoie une exception de test à Sentry pour vérifier l\'intégration.',
-        'button' => 'Envoyer une exception de test',
-        'sent' => 'Exception de test envoyée. Elle apparaît dans Sentry en moins d\'une minute.',
+        'description' => 'Envoie une exception de test à Sentry pour vérifier que l\'intégration fonctionne.',
+        'button' => 'Exception backend',
+        'sent' => 'Backend envoyé',
+        'event_id' => 'ID de l\'événement : :id',
     ],
 ];

@@ -7,7 +7,7 @@ use RuntimeException;
 
 class SentryTestController
 {
-    public const FLASH_KEY = 'devops.sentry_test_sent';
+    public const FLASH_KEY = 'devops.sentry_test_event_id';
 
     public static function isAvailable(): bool
     {
@@ -18,10 +18,12 @@ class SentryTestController
     {
         abort_unless(self::isAvailable(), 404);
 
-        app('sentry')->captureException(
+        $eventId = app('sentry')->captureException(
             new RuntimeException('[Sentry Test] Test exception sent from the developer console.')
         );
 
-        return redirect()->route('devops.console')->with(self::FLASH_KEY, true);
+        return redirect()
+            ->route('devops.console')
+            ->with(self::FLASH_KEY, $eventId === null ? '' : (string) $eventId);
     }
 }

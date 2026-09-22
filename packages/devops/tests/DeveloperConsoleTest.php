@@ -100,7 +100,7 @@ class DeveloperConsoleTest extends TestCase
     {
         $this->get('/devops')
             ->assertOk()
-            ->assertDontSee('Sentry test');
+            ->assertDontSee('Sentry Test');
 
         $this->post('/devops/sentry-test')->assertNotFound();
     }
@@ -110,19 +110,21 @@ class DeveloperConsoleTest extends TestCase
         $sentry = Mockery::mock();
         $sentry->shouldReceive('captureException')
             ->once()
-            ->with(Mockery::type(RuntimeException::class));
+            ->with(Mockery::type(RuntimeException::class))
+            ->andReturn('0a3e56e2be084ab5889c445f62b05172');
 
         $this->app->instance('sentry', $sentry);
 
         $this->get('/devops')
             ->assertOk()
-            ->assertSee('Sentry test');
+            ->assertSee('Sentry Test');
 
         $this->post('/devops/sentry-test')
             ->assertRedirect(url('/devops'));
 
         $this->get('/devops')
             ->assertOk()
-            ->assertSee('Test exception sent');
+            ->assertSee('Backend sent')
+            ->assertSee('Event ID: 0a3e56e2be084ab5889c445f62b05172');
     }
 }

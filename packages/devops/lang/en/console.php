@@ -2,27 +2,27 @@
 
 return [
     'title' => 'Developer Console',
-    'subtitle' => 'Monitoring tools and state of the application.',
+    'subtitle' => 'This is a page for developers to monitor and test the application.',
     'tools' => [
         'health' => [
             'label' => 'Laravel Health',
-            'description' => 'Latest results of the health checks.',
+            'description' => 'Check the health of the Laravel application.',
         ],
         'horizon' => [
             'label' => 'Laravel Horizon',
-            'description' => 'Queues, workers and failed jobs.',
+            'description' => 'Monitor the queues of the application.',
         ],
         'pulse' => [
             'label' => 'Laravel Pulse',
-            'description' => 'Performance and usage of the application.',
+            'description' => 'Insights into the application\'s performance and usage.',
         ],
         'telescope' => [
             'label' => 'Laravel Telescope',
-            'description' => 'Requests, queries, jobs and exceptions in detail.',
+            'description' => 'Inspect the requests, queries, jobs and exceptions.',
         ],
         'logs' => [
             'label' => 'Logs',
-            'description' => 'Log files of the application.',
+            'description' => 'View the logs of the application.',
         ],
     ],
     'application' => [
@@ -42,7 +42,7 @@ return [
         'unknown' => 'unknown',
     ],
     'health' => [
-        'title' => 'Health checks',
+        'title' => 'Health Checks',
         'checked_at' => 'Last run :time',
         'no_results' => 'No results yet. The checks run from the scheduler with health:check.',
         'ok' => 'ok',
@@ -53,9 +53,10 @@ return [
         'view' => 'View the results',
     ],
     'sentry' => [
-        'title' => 'Sentry test',
-        'description' => 'Send a test exception to Sentry to verify the integration.',
-        'button' => 'Send a test exception',
-        'sent' => 'Test exception sent. It appears in Sentry within a minute.',
+        'title' => 'Sentry Test',
+        'description' => 'Send a test exception to Sentry to verify the integration is working.',
+        'button' => 'Backend exception',
+        'sent' => 'Backend sent',
+        'event_id' => 'Event ID: :id',
     ],
 ];
