@@ -33,5 +33,6 @@ abstract class TestCase extends TestbenchTestCase
             CacheHealthResultStore::class => ['store' => 'array'],
         ]);
         $app['config']->set('health.notifications.enabled', false);
+        $app['config']->set('devops.console.middleware', ['web']);
     }
 }

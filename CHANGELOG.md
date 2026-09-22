@@ -2,6 +2,12 @@
 
 All notable changes to the packages are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and every package shares the same version number.
 
+## [1.1.0] - 2026-09-22
+
+### Added
+
+- `witify/devops`: developer console at `/devops` listing the installed monitoring tools (Health, Horizon, Pulse, Telescope, Logs) with a health summary, the application information and a Sentry test button, plus the laravel-health results page at `/status`. Both paths and their middleware are configurable, `devops.console.links` overrides or adds tools.
+
 ## [1.0.0] - 2026-09-21
 
 ### Added

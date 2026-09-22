@@ -240,6 +240,42 @@ class ShopifyImportCheck extends ClientFacingCheck
 
 `clientMessage()` rebuilds the message from the stored `meta` because the portal reads stored results, not the `Result` returned by `run()`. Use `LocalizedTextData::fromTranslation()` and `fromTranslationChoice()` when the texts live in language files.
 
+## Developer console
+
+The package serves a developer console at `/devops` and the results page of laravel-health at `/status`. The console lists the monitoring tools installed in the application, with the URL each package serves according to its own configuration:
+
+| Tool | Detected when | URL |
+|---|---|---|
+| Laravel Health | the `/status` page is enabled | `devops.console.health_path` |
+| Laravel Horizon | `laravel/horizon` is installed | `config('horizon.path')` |
+| Laravel Pulse | `laravel/pulse` is installed | `config('pulse.path')` |
+| Laravel Telescope | `laravel/telescope` is installed | `config('telescope.path')` |
+| Logs | `opcodesio/log-viewer` or `arcanedev/log-viewer` is installed | the route path of the installed package |
+
+Below the tools, the page shows a summary of the latest health run, the application information (environment, `APP_VERSION`, PHP and Laravel versions, debug and maintenance modes, cached configuration and routes, GitHub repository, Sentry project) and, when `sentry/sentry-laravel` is installed, a button that sends a test exception.
+
+Both pages are served behind the `devops.console.middleware` list, which defaults to `['web', 'auth']`. **Add the middleware that restricts them to your administrators** before deploying, for example:
+
+```php
+'console' => [
+    'path' => 'devops',
+    'health_path' => 'status',
+    'middleware' => ['web', 'auth', 'role:admin'],
+    'links' => [],
+],
+```
+
+Set `path` or `health_path` to `null` to disable a page, for example when the application already serves its own `/status` route. Use `links` to override a detected URL or to add a tool the detection cannot see:
+
+```php
+'links' => [
+    'logs' => '/my-log-viewer',
+    'forge' => ['label' => 'Forge', 'description' => 'Server panel', 'url' => 'https://forge.laravel.com/servers/1234'],
+],
+```
+
+The page is a standalone Blade view with its own styles, so it works with any frontend stack. Publish it with `--tag="devops-views"` to adapt it.
+
 ## Configuration
 
 Publish the config only when a default needs to change:
@@ -256,8 +292,12 @@ php artisan vendor:publish --tag="devops-config"
 | `route.middleware` | `['api']` | middleware groups applied before the token check |
 | `sentry_dsn` | `env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN'))` | DSN parsed for the Sentry project id |
 | `backup_disk` | `backup` | filesystem disk whose `bucket` is reported |
+| `console.path` | `devops` | path of the developer console, `null` to disable |
+| `console.health_path` | `status` | path of the laravel-health results page, `null` to disable |
+| `console.middleware` | `['web', 'auth']` | middleware of both pages |
+| `console.links` | `[]` | URL overrides and extra tools of the console |
 
-Translations of the bundled checks can be published with `--tag="devops-translations"`.
+Translations of the bundled checks and of the console can be published with `--tag="devops-translations"`.
 
 ## Changelog and upgrades
 

@@ -29,4 +29,17 @@ return [
      */
     'backup_disk' => 'backup',
 
+    /*
+     * Developer console: a page listing the monitoring tools installed in the application.
+     * `path` serves the console and `health_path` the results page of laravel-health;
+     * null disables either page. Add the middleware that restricts them to your
+     * administrators. `links` overrides or adds tool URLs, e.g. ['logs' => '/my-logs'].
+     */
+    'console' => [
+        'path' => 'devops',
+        'health_path' => 'status',
+        'middleware' => ['web', 'auth'],
+        'links' => [],
+    ],
+
 ];
