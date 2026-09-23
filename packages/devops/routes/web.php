@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Spatie\Health\Http\Controllers\HealthCheckResultsController;
 use Witify\Devops\Http\Controllers\DeveloperConsoleController;
+use Witify\Devops\Http\Controllers\EchoTestController;
 use Witify\Devops\Http\Controllers\SentryTestController;
 
 $consolePath = config('devops.console.path');
@@ -12,6 +13,7 @@ Route::middleware((array) config('devops.console.middleware'))->group(function (
     if (is_string($consolePath) && $consolePath !== '') {
         Route::get($consolePath, DeveloperConsoleController::class)->name('devops.console');
         Route::post($consolePath . '/sentry-test', SentryTestController::class)->name('devops.console.sentry_test');
+        Route::post($consolePath . '/echo-test', EchoTestController::class)->name('devops.console.echo_test');
     }
 
     if (is_string($healthPath) && $healthPath !== '') {

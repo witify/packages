@@ -3,6 +3,7 @@
     /** @var \Witify\Devops\ValueObjects\ApplicationInfoData $application */
     /** @var \Witify\Devops\ValueObjects\HealthSummaryData $health */
     /** @var bool $sentryTestEnabled */
+    /** @var \Witify\Devops\ValueObjects\EchoClientConfigData|null $echo */
     $onOff = fn (bool $value): string => __('devops::console.application.' . ($value ? 'on' : 'off'));
     $statuses = ['ok', 'warning', 'failed', 'crashed', 'skipped'];
     $sentryEventId = session(\Witify\Devops\Http\Controllers\SentryTestController::FLASH_KEY);
@@ -15,6 +16,21 @@
         'default' => ['color' => 'gray', 'body' => '<path fill="currentColor" fill-rule="evenodd" d="M4.78 4.97a.75.75 0 0 1 0 1.06L2.81 8l1.97 1.97a.75.75 0 1 1-1.06 1.06l-2.5-2.5a.75.75 0 0 1 0-1.06l2.5-2.5a.75.75 0 0 1 1.06 0m6.44 0a.75.75 0 0 0 0 1.06L13.19 8l-1.97 1.97a.75.75 0 1 0 1.06 1.06l2.5-2.5a.75.75 0 0 0 0-1.06l-2.5-2.5a.75.75 0 0 0-1.06 0M8.856 2.008a.75.75 0 0 1 .636.848l-1.5 10.5a.75.75 0 0 1-1.484-.212l1.5-10.5a.75.75 0 0 1 .848-.636" clip-rule="evenodd"/>'],
     ];
     $serverIcon = '<path fill="currentColor" d="M3.665 3.588A2 2 0 0 1 5.622 2h4.754a2 2 0 0 1 1.958 1.588l1.098 5.218a3.5 3.5 0 0 0-1.433-.306H4a3.5 3.5 0 0 0-1.433.306z"/><path fill="currentColor" fill-rule="evenodd" d="M4 10a2 2 0 1 0 0 4h8a2 2 0 1 0 0-4zm8 2.75a.75.75 0 1 0 0-1.5a.75.75 0 0 0 0 1.5M9.75 12a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0" clip-rule="evenodd"/>';
+    $broadcastIcon = '<path fill="currentColor" d="M3.05 3.05a7 7 0 0 0 0 9.9a.75.75 0 1 1-1.06 1.06a8.5 8.5 0 0 1 0-12.02a.75.75 0 0 1 1.06 1.06m9.9-1.06a8.5 8.5 0 0 1 0 12.02a.75.75 0 1 1-1.06-1.06a7 7 0 0 0 0-9.9a.75.75 0 0 1 1.06-1.06M5.172 5.172a4 4 0 0 0 0 5.656a.75.75 0 0 1-1.06 1.06a5.5 5.5 0 0 1 0-7.777a.75.75 0 0 1 1.06 1.061m5.656-1.06a5.5 5.5 0 0 1 0 7.777a.75.75 0 1 1-1.06-1.061a4 4 0 0 0 0-5.656a.75.75 0 0 1 1.06-1.06M8 9a1 1 0 1 0 0-2a1 1 0 0 0 0 2"/>';
+    $echoClient = $echo === null ? [] : array_merge($echo->toArray(), [
+        'auth_endpoint' => url('/broadcasting/auth'),
+        'send_url' => route('devops.console.echo_test'),
+        'csrf_token' => csrf_token(),
+    ]);
+    $echoLabels = [
+        'socket' => __('devops::console.echo.socket', ['state' => ':state']),
+        'connected' => __('devops::console.echo.connected'),
+        'connecting' => __('devops::console.echo.connecting'),
+        'disconnected' => __('devops::console.echo.disconnected'),
+        'sent' => __('devops::console.echo.sent', ['channel' => ':channel']),
+        'received' => __('devops::console.echo.received'),
+        'error' => __('devops::console.echo.error', ['status' => ':status']),
+    ];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -59,6 +75,14 @@
         .button:hover { background: #eab308; }
         .button svg { width: 16px; height: 16px; }
         .result { margin: 14px 0 0; color: var(--muted); font-size: 14px; }
+        .button.blue { background: #2563eb; color: #ffffff; }
+        .button.blue:hover { background: #1d4ed8; }
+        .meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 14px; }
+        .row { display: flex; gap: 10px; }
+        .input { flex: 1; min-width: 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; }
+        .events { list-style: none; margin: 12px 0 0; padding: 0; font-size: 14px; }
+        .events li { padding: 6px 0; border-top: 1px solid var(--line); }
+        code { padding: 2px 6px; border-radius: 6px; background: #f3f4f6; font-size: 13px; }
         a { color: var(--link); }
     </style>
 </head>
@@ -144,6 +168,94 @@
                 </p>
             @endif
         </div>
+    @endif
+
+    @if ($echo !== null)
+        <div class="card section" id="echo-test" data-echo="{{ json_encode($echoClient) }}" data-labels="{{ json_encode($echoLabels) }}">
+            <h2>{{ __('devops::console.echo.title') }}</h2>
+            <p class="muted" style="margin: 0 0 14px">{{ __('devops::console.echo.description') }}</p>
+            <p class="meta">
+                <span class="badge" id="echo-status">{{ __('devops::console.echo.socket', ['state' => __('devops::console.echo.disconnected')]) }}</span>
+                <code>private-{{ $echo->channel }}</code>
+            </p>
+            <form class="row" id="echo-form">
+                <input class="input" name="message" type="text" maxlength="255" value="{{ \Witify\Devops\Http\Controllers\EchoTestController::DEFAULT_MESSAGE }}">
+                <button class="button blue" type="submit">
+                    <svg viewBox="0 0 16 16" aria-hidden="true">{!! $broadcastIcon !!}</svg>
+                    {{ __('devops::console.echo.button') }}
+                </button>
+            </form>
+            <p class="result" id="echo-result" hidden></p>
+            <ul class="events" id="echo-events"></ul>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/pusher-js@8/dist/web/pusher.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/laravel-echo@2/dist/echo.iife.js"></script>
+        <script>
+            (function () {
+                var card = document.getElementById('echo-test');
+                var config = JSON.parse(card.dataset.echo);
+                var labels = JSON.parse(card.dataset.labels);
+                var status = document.getElementById('echo-status');
+                var events = document.getElementById('echo-events');
+                var result = document.getElementById('echo-result');
+                var form = document.getElementById('echo-form');
+
+                var echo = new Echo({
+                    broadcaster: config.broadcaster,
+                    key: config.key,
+                    cluster: config.cluster || undefined,
+                    wsHost: config.host || undefined,
+                    wsPort: config.port || undefined,
+                    wssPort: config.port || undefined,
+                    forceTLS: config.force_tls,
+                    enabledTransports: ['ws', 'wss'],
+                    authEndpoint: config.auth_endpoint,
+                    csrfToken: config.csrf_token
+                });
+
+                function setState(state) {
+                    var known = state === 'connected' ? 'connected' : (state === 'connecting' || state === 'initialized' ? 'connecting' : 'disconnected');
+                    status.textContent = labels.socket.replace(':state', labels[known]);
+                    status.className = 'badge ' + (known === 'connected' ? 'ok' : (known === 'connecting' ? 'warning' : 'failed'));
+                }
+
+                var connection = echo.connector.pusher.connection;
+                setState(connection.state);
+                connection.bind('state_change', function (states) { setState(states.current); });
+
+                echo.private(config.channel).listen('.' + config.event, function (payload) {
+                    var item = document.createElement('li');
+                    item.textContent = labels.received + ' ' + new Date().toLocaleTimeString() + ' — ' + payload.message;
+                    events.insertBefore(item, events.firstChild);
+                });
+
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    result.hidden = true;
+
+                    fetch(config.send_url, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': config.csrf_token,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ message: form.elements.message.value })
+                    }).then(function (response) {
+                        if (!response.ok) { throw response.status; }
+                        return response.json();
+                    }).then(function (data) {
+                        result.textContent = labels.sent.replace(':channel', data.channel);
+                        result.hidden = false;
+                    }).catch(function (failure) {
+                        result.textContent = labels.error.replace(':status', failure);
+                        result.hidden = false;
+                    });
+                });
+            })();
+        </script>
     @endif
 </main>
 </body>

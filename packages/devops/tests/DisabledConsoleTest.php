@@ -23,6 +23,7 @@ class DisabledConsoleTest extends TestCase
     {
         $this->assertFalse(Route::has('devops.console'));
         $this->assertFalse(Route::has('devops.console.sentry_test'));
+        $this->assertFalse(Route::has('devops.console.echo_test'));
         $this->assertFalse(Route::has('devops.health'));
         $this->assertTrue(Route::has('api.devops.health.show'));
     }

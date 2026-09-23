@@ -59,4 +59,16 @@ return [
         'sent' => 'Backend sent',
         'event_id' => 'Event ID: :id',
     ],
+    'echo' => [
+        'title' => 'Echo Test',
+        'description' => 'Broadcast a test event on your private user channel and watch it arrive over the WebSocket.',
+        'socket' => 'Socket: :state',
+        'connected' => 'connected',
+        'disconnected' => 'disconnected',
+        'connecting' => 'connecting',
+        'button' => 'Broadcast',
+        'sent' => 'Sent on :channel',
+        'received' => 'Received',
+        'error' => 'The broadcast failed (:status).',
+    ],
 ];
