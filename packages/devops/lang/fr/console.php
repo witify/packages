@@ -59,4 +59,16 @@ return [
         'sent' => 'Backend envoyé',
         'event_id' => 'ID de l\'événement : :id',
     ],
+    'echo' => [
+        'title' => 'Test Echo',
+        'description' => 'Diffuse un événement de test sur votre canal utilisateur privé et le voit arriver par le WebSocket.',
+        'socket' => 'Socket : :state',
+        'connected' => 'connecté',
+        'disconnected' => 'déconnecté',
+        'connecting' => 'connexion',
+        'button' => 'Diffuser',
+        'sent' => 'Envoyé sur :channel',
+        'received' => 'Reçu',
+        'error' => 'La diffusion a échoué (:status).',
+    ],
 ];

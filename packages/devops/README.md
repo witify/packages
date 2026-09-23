@@ -254,6 +254,33 @@ The package serves a developer console at `/devops` and the results page of lara
 
 Below the tools, the page shows a summary of the latest health run, the application information (environment, `APP_VERSION`, PHP and Laravel versions, debug and maintenance modes, cached configuration and routes, GitHub repository, Sentry project) and, when `sentry/sentry-laravel` is installed, a button that sends a test exception.
 
+### Echo test
+
+Set `devops.console.echo_channel` to the private channel of the authenticated user to add an Echo test to the console. `{id}` is replaced by the user id:
+
+```php
+'console' => [
+    // ...
+    'echo_channel' => 'user.{id}',
+],
+```
+
+The card opens a Laravel Echo connection with the application's default broadcaster (Pusher or Reverb, read from `config/broadcasting.php`), listens on the channel and, on click, broadcasts `devops.echo_test` from `POST /devops/echo-test`. The event appears in the card when it comes back over the WebSocket, so the whole chain is verified: server, WebSocket server, channel authorization. The card stays hidden while `echo_channel` is null or while the default broadcaster is neither Pusher nor Reverb. The channel must be authorized in `routes/channels.php`, and `/broadcasting/auth` must be registered.
+
+## Health notification
+
+`Witify\Devops\Notifications\CheckFailedNotification` is the laravel-health failure notification with the URL of the application in the mail subject (`Health check failed on https://app.example.com`), so the recipient sees which deployment fails before opening the mail. Register it in `config/health.php` in place of the Spatie class:
+
+```php
+'notifications' => [
+    'notifications' => [
+        \Witify\Devops\Notifications\CheckFailedNotification::class => ['mail'],
+    ],
+],
+```
+
+Throttling, channels and recipients stay those of laravel-health.
+
 Both pages are served behind the `devops.console.middleware` list, which defaults to `['web', 'auth']`. **Add the middleware that restricts them to your administrators** before deploying, for example:
 
 ```php
@@ -292,6 +319,11 @@ php artisan vendor:publish --tag="devops-config"
 | `route.middleware` | `['api']` | middleware groups applied before the token check |
 | `sentry_dsn` | `env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN'))` | DSN parsed for the Sentry project id |
 | `backup_disk` | `backup` | filesystem disk whose `bucket` is reported |
+| `console.path` | `devops` | path of the developer console, `null` disables it |
+| `console.health_path` | `status` | path of the laravel-health results page, `null` disables it |
+| `console.middleware` | `['web', 'auth']` | middleware of both console pages |
+| `console.links` | `[]` | tool URLs to override or add |
+| `console.echo_channel` | `null` | private channel of the Echo test, `null` hides it |
 | `console.path` | `devops` | path of the developer console, `null` to disable |
 | `console.health_path` | `status` | path of the laravel-health results page, `null` to disable |
 | `console.middleware` | `['web', 'auth']` | middleware of both pages |

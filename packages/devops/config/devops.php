@@ -34,12 +34,18 @@ return [
      * `path` serves the console and `health_path` the results page of laravel-health;
      * null disables either page. Add the middleware that restricts them to your
      * administrators. `links` overrides or adds tool URLs, e.g. ['logs' => '/my-logs'].
+     *
+     * `echo_channel` enables the Echo test: the private channel of the authenticated
+     * user, with `{id}` replaced by the user id, e.g. 'user.{id}' or 'App.Models.User.{id}'.
+     * The test stays hidden while it is null or while the default broadcaster is
+     * neither Pusher nor Reverb.
      */
     'console' => [
         'path' => 'devops',
         'health_path' => 'status',
         'middleware' => ['web', 'auth'],
         'links' => [],
+        'echo_channel' => null,
     ],
 
 ];
