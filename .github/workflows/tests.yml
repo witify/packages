@@ -59,7 +59,10 @@ jobs:
           coverage: none
 
       - name: Install dependencies for Laravel ${{ matrix.version.laravel }}
+        # Laravel 8 and 9 are end of life and carry security advisories; Composer
+        # refuses them by default, but they are exactly what this matrix tests.
         run: |
+          composer config policy.advisories.block false
           composer update --prefer-dist --no-interaction --no-progress \
             --with "illuminate/support:${{ matrix.version.laravel }}" \
             --with "orchestra/testbench:${{ matrix.version.testbench }}" \
