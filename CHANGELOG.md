@@ -2,6 +2,12 @@
 
 All notable changes to the packages are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and every package shares the same version number.
 
+## [Unreleased]
+
+### Added
+
+- `witify/support`: the base classes of the Sprintify applications, extracted from `src/Support` and `modules/Utils`: `Action`, `Controller` with `confirmRequest()` and `rateLimit()`, `BaseResource`, `BaseQueryBuilder` and the search classes, the JSON exceptions, `IsResource` with `resource_data`, `SanitizesHtmlTrait` with `RichTextSanitizer` and its published allow-list, `MailMessage`, `DatabaseChannel` with the `NewNotification` broadcast, `ModuleServiceProvider` with the shared-data and user-notification registries. The values the package needs from the application go through `Host` resolvers and the `support` config; the texts through the `support::` translations. Runs on PHP 8.2 to 8.4 and Laravel 11 and 12.
+
 ## [1.2.0] - 2026-09-23
 
 ### Added

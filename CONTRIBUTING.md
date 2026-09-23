@@ -8,7 +8,7 @@ packages/<name>/        one Composer package, split into github.com/witify/<name
   src/                  PSR-4, namespace Witify\<Name>\
   config/ lang/ routes/ tests/
 composer.json           root tooling only: Pint, Larastan, Testbench, path repositories to packages/*
-phpstan.neon pint.json  one configuration for every package
+phpstan.neon pint.json  root configuration; a package with a higher PHP floor adds its own phpstan.neon
 .github/workflows/      tests.yml (matrix per package) and split.yml
 ```
 
@@ -31,7 +31,7 @@ composer update --with "illuminate/support:8.*" --with "orchestra/testbench:^6.2
 vendor/bin/phpunit
 ```
 
-CI runs this matrix for every package on each push and pull request (`.github/workflows/tests.yml`). The pairs are PHP 8.0 + Laravel 8, PHP 8.1 + Laravel 9 and PHP 8.4 + Laravel 12.
+CI runs this matrix for every package on each push and pull request (`.github/workflows/tests.yml`), one entry per package and pair. `witify/devops` runs on PHP 8.0 + Laravel 8, PHP 8.1 + Laravel 9 and PHP 8.4 + Laravel 12; `witify/support` on PHP 8.2 + Laravel 11 and PHP 8.4 + Laravel 12.
 
 ### Code that must run on PHP 8.0
 
@@ -55,8 +55,8 @@ Composer symlinks `vendor/witify/devops` to `packages/devops`, so edits are visi
 
 1. Create `packages/<name>` with its `composer.json` (name `witify/<name>`, PSR-4 `Witify\<Name>\`), `README.md`, `LICENSE.md` and tests.
 2. Root `composer.json`: add `"witify/<name>": "@dev"` to `require-dev` and the tests namespace to `autoload-dev`.
-3. `phpstan.neon`: add `packages/<name>/src` to `paths`.
-4. `.github/workflows/tests.yml`: add the package to the `package` matrix.
+3. `phpstan.neon`: add `packages/<name>/src` to `paths`, or give the package its own `phpstan.neon` when its PHP floor differs and chain it in the root `analyse` script.
+4. `.github/workflows/tests.yml`: add one `include` entry per supported PHP / Laravel pair, each with the `package` key.
 5. `.github/workflows/split.yml`: add a matrix entry with the secret name of its deploy key, then create the key (below).
 6. Create the empty repository `github.com/witify/<name>` and, after the first split, submit it on packagist.org.
 

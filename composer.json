@@ -11,7 +11,8 @@
         "laravel/pint": "^1.13",
         "orchestra/testbench": "^10.0",
         "phpunit/phpunit": "^11.5",
-        "witify/devops": "@dev"
+        "witify/devops": "@dev",
+        "witify/support": "@dev"
     },
     "repositories": [
         {
@@ -24,7 +25,8 @@
     ],
     "autoload-dev": {
         "psr-4": {
-            "Witify\\Devops\\Tests\\": "packages/devops/tests/"
+            "Witify\\Devops\\Tests\\": "packages/devops/tests/",
+            "Witify\\Support\\Tests\\": "packages/support/tests/"
         }
     },
     "config": {
@@ -34,7 +36,7 @@
         "test": "phpunit",
         "lint": "pint",
         "lint:test": "pint --test",
-        "analyse": "phpstan analyse --memory-limit=1G"
+        "analyse": "phpstan analyse --memory-limit=1G && phpstan analyse --memory-limit=1G -c packages/support/phpstan.neon"
     },
     "minimum-stability": "stable",
     "prefer-stable": true

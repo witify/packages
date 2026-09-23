@@ -34,15 +34,16 @@ jobs:
 
     strategy:
       fail-fast: false
-      # `version` is a matrix dimension, not an `include` list: include entries
-      # without a `package` key all merge into the same combination and only the
-      # last one runs.
+      # One entry per package and supported PHP / Laravel pair. Every entry
+      # carries the `package` key: include entries without it would merge into
+      # one combination and only the last one would run.
       matrix:
-        package: [devops]
-        version:
-          - { php: "8.0", laravel: "8.*", testbench: "^6.23", phpunit: "^9.5" }
-          - { php: "8.1", laravel: "9.*", testbench: "^7.6", phpunit: "^9.5" }
-          - { php: "8.4", laravel: "12.*", testbench: "^10.0", phpunit: "^11.5" }
+        include:
+          - { package: devops, version: { php: "8.0", laravel: "8.*", testbench: "^6.23", phpunit: "^9.5" } }
+          - { package: devops, version: { php: "8.1", laravel: "9.*", testbench: "^7.6", phpunit: "^9.5" } }
+          - { package: devops, version: { php: "8.4", laravel: "12.*", testbench: "^10.0", phpunit: "^11.5" } }
+          - { package: support, version: { php: "8.2", laravel: "11.*", testbench: "^9.0", phpunit: "^10.5" } }
+          - { package: support, version: { php: "8.4", laravel: "12.*", testbench: "^10.0", phpunit: "^11.5" } }
 
     defaults:
       run:

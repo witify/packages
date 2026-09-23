@@ -16,6 +16,8 @@ jobs:
         include:
           - package: devops
             key: SPLIT_KEY_DEVOPS
+          - package: support
+            key: SPLIT_KEY_SUPPORT
 
     steps:
       - uses: actions/checkout@v4
