@@ -2,6 +2,12 @@
 
 All notable changes to the packages are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and every package shares the same version number.
 
+## [Unreleased]
+
+### Fixed
+
+- `witify/notifications`: the two migrations carry the names the applications already recorded when the module was local (`2023_04_20_173507_create_notifications_table`, `2025_08_05_191344_create_notification_messages`). Dated 2026-09-24, they ran after any application migration that touches the `notifications` table, which broke every fresh database (tests, CI, new installs); named as before, they sort first and an existing database counts them as run.
+
 ## [1.4.0] - 2026-09-24
 
 ### Added

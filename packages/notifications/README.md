@@ -236,7 +236,7 @@ php artisan vendor:publish --tag="notifications-translations"
 
 ## Migrating an application from the modules
 
-1. Delete `modules/Notification` and `modules/NotificationPreview`, their two migrations in `database/migrations` (the package ships them, guarded by `Schema::hasTable`) and the `Notifications` enum.
+1. Delete `modules/Notification` and `modules/NotificationPreview`, their two migrations in `database/migrations` (the package ships them under the same names, guarded by `Schema::hasTable`, so an existing database counts them as run and a fresh one creates the tables before any later migration touches them) and the `Notifications` enum.
 2. `Herald::register([...])` with the cases of the enum as keys, in a service provider.
 3. The user model implements `HeraldUser`.
 4. Replace the imports: `Modules\NotificationPreview\Herald\*` and `Modules\Notification\*` become `Witify\Notifications\*` (`Actions\User\GetUserNotificationsAction` becomes `Actions\GetUserNotificationsAction`).
