@@ -61,6 +61,14 @@ jobs:
           extensions: mbstring, fileinfo, dom, sqlite3, pdo_sqlite
           coverage: none
 
+      - name: Resolve sibling packages from the monorepo
+        # A package that requires another witify/* package finds it next to
+        # itself, at the version the root composer.json pins, since the
+        # release under test is not on Packagist yet.
+        run: |
+          versions=$(jq -c '.repositories[0].options.versions' ../../composer.json)
+          composer config repositories.monorepo "{\"type\":\"path\",\"url\":\"../*\",\"options\":{\"versions\":$versions}}"
+
       - name: Install dependencies for Laravel ${{ matrix.version.laravel }}
         # Laravel 8 and 9 are end of life and carry security advisories; Composer
         # refuses them by default, but they are exactly what this matrix tests.
