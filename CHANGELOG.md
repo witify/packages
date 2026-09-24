@@ -2,6 +2,17 @@
 
 All notable changes to the packages are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and every package shares the same version number.
 
+## [Unreleased]
+
+### Added
+
+- `witify/support`: `IsResourceTrait` gives a default `getResourceColor()` of `gray`, so a model only declares its color when it has one. `BelongsToSearchConstraint` accepts `Expression` columns.
+
+### Changed
+
+- `witify/support`: `search()` treats the keyword as a literal (its `%` and `_` are escaped, with the escape character bound so SQLite behaves like MySQL), no longer wraps the columns in `LOWER()` (the collation already ignores case and `LOWER()` defeated the indexes) and no longer replaces the builder with the return value of a callback. Reconciled from agnico.
+- `witify/support`: the password confirmation counts the wrong attempts per user and per action, and a right password wipes the count. Reconciled from agnico.
+
 ## [1.3.1] - 2026-09-24
 
 ### Fixed
