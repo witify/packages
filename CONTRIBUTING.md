@@ -31,7 +31,9 @@ composer update --with "illuminate/support:8.*" --with "orchestra/testbench:^6.2
 vendor/bin/phpunit
 ```
 
-CI runs this matrix for every package on each push and pull request (`.github/workflows/tests.yml`), one entry per package and pair. `witify/devops` runs on PHP 8.0 + Laravel 8, PHP 8.1 + Laravel 9 and PHP 8.4 + Laravel 12; `witify/support` on PHP 8.2 + Laravel 11 and PHP 8.4 + Laravel 12.
+CI runs this matrix for every package on each push and pull request (`.github/workflows/tests.yml`), one entry per package and pair. `witify/devops` runs on PHP 8.0 + Laravel 8, PHP 8.1 + Laravel 9 and PHP 8.4 + Laravel 12; `witify/support` and `witify/notifications` on PHP 8.2 + Laravel 11 and PHP 8.4 + Laravel 12.
+
+The path repository of the root `composer.json` pins every package to the upcoming version (`options.versions`), so a package can require another one with a caret constraint while both are checked out.
 
 ### Code that must run on PHP 8.0
 

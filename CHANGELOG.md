@@ -6,6 +6,8 @@ All notable changes to the packages are documented here. The format follows [Kee
 
 ### Added
 
+- `witify/notifications`: Herald, extracted from the `Notification` and `NotificationPreview` modules of Sprintify, PHP and Vue in one package: `HeraldNotification` and `HeraldOptions`, the previews and the editable texts, the per-user channel settings, the inbox with its API, the daily schedule command, `HeraldNotificationDispatch`. The application registers its notifications with `Herald::register()` instead of an enum, its user model implements `HeraldUser`, and the Vue pages are consumed from `vendor/` through the `@witify/notifications` alias with the host services injected by `configureNotifications()`. Requires `witify/support`.
+
 - `witify/support`: the base classes of the Sprintify applications, extracted from `src/Support` and `modules/Utils`: `Action`, `Controller` with `confirmRequest()` and `rateLimit()`, `BaseResource`, `BaseQueryBuilder` and the search classes, the JSON exceptions, `IsResource` with `resource_data`, `SanitizesHtmlTrait` with `RichTextSanitizer` and its published allow-list, `MailMessage`, `DatabaseChannel` with the `NewNotification` broadcast, `ModuleServiceProvider` with the shared-data and user-notification registries. The values the package needs from the application go through `Host` resolvers and the `support` config; the texts through the `support::` translations. Runs on PHP 8.2 to 8.4 and Laravel 11 and 12.
 
 ## [1.2.0] - 2026-09-23

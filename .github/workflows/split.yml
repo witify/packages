@@ -18,6 +18,8 @@ jobs:
             key: SPLIT_KEY_DEVOPS
           - package: support
             key: SPLIT_KEY_SUPPORT
+          - package: notifications
+            key: SPLIT_KEY_NOTIFICATIONS
 
     steps:
       - uses: actions/checkout@v4

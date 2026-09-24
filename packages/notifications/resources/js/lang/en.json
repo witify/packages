@@ -1,0 +1,22 @@
+{
+  "modules.notification_preview.notification_previews": "Notification Preview",
+  "modules.notification_preview.no_preview_available": "No preview available",
+  "modules.notification_preview.channel": "Channel",
+  "modules.notification_preview.mail_channel": "Email",
+  "modules.notification_preview.database_channel": "In-App",
+  "modules.notification_preview.database_preview": "In-App preview",
+  "modules.notification_preview.database_message": "In-App message",
+  "modules.notification_preview.path": "Path",
+  "modules.notification_preview.url": "URL",
+  "modules.notification_preview.customize_section": "Customize this",
+  "modules.notification_preview.subject": "Subject",
+  "modules.notification_preview.message": "Message",
+  "modules.notification_preview.delete": "Delete",
+  "modules.notification_preview.delete_notification_message": "Delete custom notification message?",
+  "modules.notification_preview.delete_notification_message_confirm": "Are you sure you want to delete custom notification messages for all channels and languages and restore the default messages?",
+  "modules.notification_preview.preview_error": "An error occurred while generating the preview. Please check your input, make sure to fill all fields in all languages, and try again.",
+  "modules.notification_preview.missing_fields": "Please check your input, make sure to fill all fields in all languages.",
+  "modules.notification_preview.no_preview": "No preview available",
+  "modules.notification_preview.send_to": "Send to",
+  "modules.notification_preview.no_notifiables": "No recipient is configured to receive this notification."
+}
