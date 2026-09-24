@@ -157,12 +157,15 @@ import {
 
 configureNotifications({
   http,
+  useHttp,
   echo,
   currentUserId: () => useUserStore().user?.id ?? null,
 });
 
 createSprintifyApp(App, { router, i18n, modules: [notificationModule, notificationPreviewModule, ...] });
 ```
+
+`useHttp` is optional: a factory that returns a client showing the host's snackbars on error or success (`useHttp({ showSnackbarOnError: false })`). Without it the package falls back to `http`.
 
 The package exports `useAppNotificationsStore` for the bell of the layout, `NotificationPreviewIndex` for the settings tab of the admin router, and `HeraldNotificationDispatcher` for the screens that send a notification to chosen recipients.
 

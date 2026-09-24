@@ -6,7 +6,7 @@ export { notificationPreviewModule } from "./preview";
 export { useAppNotificationsStore } from "./notification/stores/notifications";
 
 export type { AppNotification } from "./notification/models/AppNotification";
-export type { UserNotificationSetting } from "./notification/models/UserNotificationSetting";
+export type { NotificationChannels, UserNotificationSetting } from "./notification/models/UserNotificationSetting";
 
 export { default as NotificationPreviewIndex } from "./preview/pages/NotificationPreviewIndex.vue";
 export { default as HeraldNotificationDispatcher } from "./preview/components/HeraldNotificationDispatcher.vue";

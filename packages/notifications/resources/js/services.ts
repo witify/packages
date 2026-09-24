@@ -10,6 +10,11 @@ export interface HttpClient {
   delete(url: string, config?: unknown): Promise<{ data: any }>;
 }
 
+export interface HttpOptions {
+  showSnackbarOnError?: boolean;
+  showSnackbarOnSuccess?: boolean;
+}
+
 export interface EchoClient {
   private(channel: string): { listen(event: string, callback: (payload: any) => void): unknown };
   leaveChannel(channel: string): void;
@@ -17,6 +22,8 @@ export interface EchoClient {
 
 export interface NotificationsServices {
   http: HttpClient;
+  /** A client that shows the host's snackbars on error or success; falls back to `http`. */
+  useHttp?: (options?: HttpOptions) => HttpClient;
   /** Absent in applications without a WebSocket server: the inbox then refreshes on open only. */
   echo?: EchoClient;
   /** Id of the authenticated user, null for a guest. */
@@ -43,6 +50,12 @@ export const http: HttpClient = {
   patch: (url, data, config) => services().http.patch(url, data, config),
   delete: (url, config) => services().http.delete(url, config),
 };
+
+export function useHttp(options?: HttpOptions): HttpClient {
+  const factory = services().useHttp;
+
+  return factory ? factory(options) : services().http;
+}
 
 export function echo(): EchoClient | undefined {
   return services().echo;
