@@ -26,7 +26,7 @@ class NotificationController extends Controller
     {
         $this->authorize('update', $notification);
 
-        $notification->update(['read_at' => now()]);
+        $notification->markAsRead();
 
         return response()->json([
             'message' => __('notifications::messages.marked_as_read'),

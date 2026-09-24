@@ -31,6 +31,38 @@ class NotificationControllerTest extends TestCase
         $response->assertJsonPath('data.0.id', $own->id);
     }
 
+    public function test_it_marks_a_notification_as_read(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        $notification = $this->createNotification($user, 'Unread');
+
+        $this->actingAs($user);
+
+        $this->patchJson('/api/notifications/' . $notification->id)
+            ->assertOk()
+            ->assertJsonPath('notification.id', $notification->id);
+
+        $this->assertNotNull($notification->fresh()?->read_at);
+    }
+
+    public function test_it_doesnt_mark_the_notification_of_another_user_as_read(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        /** @var User $otherUser */
+        $otherUser = User::factory()->create();
+
+        $notification = $this->createNotification($otherUser, 'Not mine');
+
+        $this->actingAs($user);
+
+        $this->patchJson('/api/notifications/' . $notification->id)->assertForbidden();
+
+        $this->assertNull($notification->fresh()?->read_at);
+    }
+
     public function test_it_filters_unread_notifications_through_the_filter_key(): void
     {
         /** @var User $user */
