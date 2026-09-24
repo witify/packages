@@ -2,6 +2,13 @@
 
 All notable changes to the packages are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and every package shares the same version number.
 
+## [Unreleased]
+
+### Fixed
+
+- `witify/notifications`: marking a notification as read failed with a mass assignment exception; the controller now uses `markAsRead()`.
+- `witify/devops`: the Echo test of the console threw `Echo is not a constructor` with the browser build of laravel-echo 2, which exposes the class as its default export.
+
 ## [1.3.0] - 2026-09-24
 
 ### Added

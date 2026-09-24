@@ -200,7 +200,10 @@
                 var result = document.getElementById('echo-result');
                 var form = document.getElementById('echo-form');
 
-                var echo = new Echo({
+                // The browser build of laravel-echo 2 exposes a module namespace: the class is its default export.
+                var EchoClient = window.Echo && window.Echo.default ? window.Echo.default : window.Echo;
+
+                var echo = new EchoClient({
                     broadcaster: config.broadcaster,
                     key: config.key,
                     cluster: config.cluster || undefined,
