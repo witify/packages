@@ -4,6 +4,12 @@
         <testsuite name="devops">
             <directory>packages/devops/tests</directory>
         </testsuite>
+        <testsuite name="support">
+            <directory>packages/support/tests</directory>
+        </testsuite>
+        <testsuite name="notifications">
+            <directory>packages/notifications/tests</directory>
+        </testsuite>
     </testsuites>
     <php>
         <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>

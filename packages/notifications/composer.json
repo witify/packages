@@ -1,0 +1,56 @@
+{
+    "name": "witify/notifications",
+    "description": "Herald: the notifications of the Witify Laravel applications, with their previews, editable texts, per-user channel settings, inbox and schedule. PHP and Vue in one package.",
+    "keywords": ["laravel", "notifications", "herald", "witify"],
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Witify",
+            "email": "info@witify.io"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/auth": "^11.0|^12.0",
+        "illuminate/console": "^11.0|^12.0",
+        "illuminate/contracts": "^11.0|^12.0",
+        "illuminate/database": "^11.0|^12.0",
+        "illuminate/http": "^11.0|^12.0",
+        "illuminate/notifications": "^11.0|^12.0",
+        "illuminate/routing": "^11.0|^12.0",
+        "illuminate/support": "^11.0|^12.0",
+        "illuminate/validation": "^11.0|^12.0",
+        "spatie/laravel-query-builder": "^6.0",
+        "witify/support": "^1.3"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0",
+        "phpunit/phpunit": "^10.5|^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Witify\\Notifications\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Witify\\Notifications\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Witify\\Notifications\\NotificationsServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

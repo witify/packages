@@ -1,0 +1,22 @@
+{
+  "modules.notification_preview.notification_previews": "Aperçu des notifications",
+  "modules.notification_preview.no_preview_available": "Aucun aperçu disponible",
+  "modules.notification_preview.channel": "Canal",
+  "modules.notification_preview.mail_channel": "Courriel",
+  "modules.notification_preview.database_channel": "Dans l’application",
+  "modules.notification_preview.database_preview": "Aperçu dans l’application",
+  "modules.notification_preview.database_message": "Message dans l’application",
+  "modules.notification_preview.path": "Chemin",
+  "modules.notification_preview.url": "URL",
+  "modules.notification_preview.customize_section": "Personnaliser cette section",
+  "modules.notification_preview.subject": "Objet",
+  "modules.notification_preview.message": "Message",
+  "modules.notification_preview.delete": "Supprimer",
+  "modules.notification_preview.delete_notification_message": "Supprimer le message de notification personnalisé ?",
+  "modules.notification_preview.delete_notification_message_confirm": "Êtes-vous sûr de vouloir supprimer les messages de notification personnalisés pour tous les canaux et toutes les langues, puis restaurer les messages par défaut ?",
+  "modules.notification_preview.preview_error": "Une erreur s'est produite lors de la génération de l'aperçu. Veuillez vérifier vos entrées, vous assurer de remplir tous les champs dans toutes les langues, et réessayer.",
+  "modules.notification_preview.missing_fields": "Veuillez vérifier vous assurer de remplir tous les champs dans toutes les langues.",
+  "modules.notification_preview.no_preview": "Aucun aperçu disponible",
+  "modules.notification_preview.send_to": "Envoyer à",
+  "modules.notification_preview.no_notifiables": "Aucun destinataire n'est configuré pour recevoir cette notification."
+}

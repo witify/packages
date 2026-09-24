@@ -11,20 +11,29 @@
         "laravel/pint": "^1.13",
         "orchestra/testbench": "^10.0",
         "phpunit/phpunit": "^11.5",
-        "witify/devops": "@dev"
+        "witify/devops": "@dev",
+        "witify/notifications": "@dev",
+        "witify/support": "@dev"
     },
     "repositories": [
         {
             "type": "path",
             "url": "packages/*",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "witify/devops": "1.3.0",
+                    "witify/support": "1.3.0",
+                    "witify/notifications": "1.3.0"
+                }
             }
         }
     ],
     "autoload-dev": {
         "psr-4": {
-            "Witify\\Devops\\Tests\\": "packages/devops/tests/"
+            "Witify\\Devops\\Tests\\": "packages/devops/tests/",
+            "Witify\\Support\\Tests\\": "packages/support/tests/",
+            "Witify\\Notifications\\Tests\\": "packages/notifications/tests/"
         }
     },
     "config": {
@@ -34,7 +43,7 @@
         "test": "phpunit",
         "lint": "pint",
         "lint:test": "pint --test",
-        "analyse": "phpstan analyse --memory-limit=1G"
+        "analyse": "phpstan analyse --memory-limit=1G && phpstan analyse --memory-limit=1G -c packages/support/phpstan.neon && phpstan analyse --memory-limit=1G -c packages/notifications/phpstan.neon"
     },
     "minimum-stability": "stable",
     "prefer-stable": true
