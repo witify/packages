@@ -11,7 +11,7 @@ It also ships two generic checks, `CpuCheck` and `FailedJobsCheck`, and the `Cli
 | | |
 |---|---|
 | PHP | 8.0 to 8.4 |
-| Laravel | 8.75 to 12 |
+| Laravel | 8.75 to 13 |
 | Database | any, only for the `failed_jobs` table read by `FailedJobsCheck` and the health results table when you keep the default result store |
 
 `spatie/laravel-health` and `spatie/cpu-load-health-check` are installed with the package. `spatie/laravel-backup` is optional: when it is present, the backup name is reported to the portal.
@@ -97,7 +97,7 @@ Keep only the checks that apply. An application without a queue worker has no `Q
 Register the provider:
 
 - Laravel 8 to 10: add `App\Providers\HealthServiceProvider::class` to the `providers` array of `config/app.php`.
-- Laravel 11 and 12: add it to `bootstrap/providers.php`.
+- Laravel 11 to 13: add it to `bootstrap/providers.php`.
 
 ### 3. Schedule the checks
 
@@ -114,7 +114,7 @@ protected function schedule(Schedule $schedule): void
 }
 ```
 
-Laravel 11 and 12, in `routes/console.php`:
+Laravel 11 to 13, in `routes/console.php`:
 
 ```php
 use Illuminate\Support\Facades\Schedule;
