@@ -2,6 +2,12 @@
 
 All notable changes to the packages are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and every package shares the same version number.
 
+## [Unreleased]
+
+### Added
+
+- `witify/devops`: runs on Laravel 13. The `illuminate/*` constraints accept `^13.0`, the test suite runs on Testbench 11 and PHPUnit 12, and CI adds the PHP 8.4 + Laravel 13 pair.
+
 ## [1.4.1] - 2026-09-24
 
 ### Fixed
