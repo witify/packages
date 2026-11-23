@@ -24,16 +24,15 @@ composer require witify/devops
 
 The service provider is discovered automatically.
 
-Add the two variables to `.env` (and empty placeholders to `.env.example`):
+Add the variable to `.env` (and an empty placeholder to `.env.example`):
 
 ```dotenv
 PORTAL_HEALTH_TOKEN=
-APP_VERSION=1.0.0
 ```
 
 `PORTAL_HEALTH_TOKEN` is the secret the portal sends. Generate a random one per application. The endpoint answers `404` while the token is empty, so nothing is exposed before you configure it.
 
-`APP_VERSION` is reported to the portal. Leave it out if the application has no version.
+The version of the application needs no configuration: it is the latest GitHub release, which the portal sends with each health request (see [Release version](#release-version)).
 
 ### 1. Configure laravel-health
 
@@ -178,12 +177,20 @@ Then add the application in the portal with the same token.
 
 - `checked_at` is `null` and `checks` is empty until `health:check` has stored results.
 - `label_client` and a bilingual `message` are present for `ClientFacingCheck` subclasses. Other checks report the message laravel-health stored, in both languages.
-- `sprintify_version` carries `APP_VERSION`. The key name is the one the portal reads, whatever the application is.
+- `sprintify_version` carries the [release version](#release-version) the portal sent, `null` when it sent none. The key name is part of the contract with the portal, whatever the application is.
 - `sentry_project_id` comes from `SENTRY_LARAVEL_DSN` or `SENTRY_DSN`.
 - `github_repository` is read from `.git/config` of the deployed checkout and cached for seven days.
 - `backup` reports the `bucket` of the backup disk and the backup name of spatie/laravel-backup. Both are `null` when absent.
 
 The response is sent with `Cache-Control: no-store, private`.
+
+### Release version
+
+The repositories are private, so an application cannot read its GitHub releases without a GitHub token. The portal reads them and sends the tag of the latest one in the `X-Release-Version` header of its health request. The package keeps it in the default cache store.
+
+- Only `1.2.3` and `v1.2.3` are accepted. Any other value is ignored.
+- A version the portal stopped sending disappears after seven days.
+- An application the portal does not call has no version: the developer console hides the line.
 
 ## Client-facing checks
 
@@ -252,7 +259,7 @@ The package serves a developer console at `/devops` and the results page of lara
 | Laravel Telescope | `laravel/telescope` is installed | `config('telescope.path')` |
 | Logs | `opcodesio/log-viewer` or `arcanedev/log-viewer` is installed | the route path of the installed package |
 
-Below the tools, the page shows a summary of the latest health run, the application information (environment, `APP_VERSION`, PHP and Laravel versions, debug and maintenance modes, cached configuration and routes, GitHub repository, Sentry project) and, when `sentry/sentry-laravel` is installed, a button that sends a test exception.
+Below the tools, the page shows a summary of the latest health run, the application information (environment, [release version](#release-version), PHP and Laravel versions, debug and maintenance modes, cached configuration and routes, GitHub repository, Sentry project) and, when `sentry/sentry-laravel` is installed, a button that sends a test exception.
 
 ### Echo test
 
@@ -314,7 +321,6 @@ php artisan vendor:publish --tag="devops-config"
 | Key | Default | Purpose |
 |---|---|---|
 | `token` | `env('PORTAL_HEALTH_TOKEN')` | bearer token expected by the endpoint |
-| `version` | `env('APP_VERSION')` | version reported to the portal |
 | `route.prefix` | `api/devops` | URL prefix of the endpoint |
 | `route.middleware` | `['api']` | middleware groups applied before the token check |
 | `sentry_dsn` | `env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN'))` | DSN parsed for the Sentry project id |

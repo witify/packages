@@ -8,11 +8,6 @@ return [
      */
     'token' => env('PORTAL_HEALTH_TOKEN'),
 
-    /*
-     * Version of the application, reported to the portal.
-     */
-    'version' => env('APP_VERSION'),
-
     'route' => [
         'prefix' => 'api/devops',
         'middleware' => ['api'],

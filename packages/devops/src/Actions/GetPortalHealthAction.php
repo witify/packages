@@ -21,14 +21,18 @@ class GetPortalHealthAction
 
     private GetGitHubRepositoryAction $getGitHubRepositoryAction;
 
+    private GetReleaseVersionAction $getReleaseVersionAction;
+
     public function __construct(
         ResultStore $resultStore,
         Health $health,
-        GetGitHubRepositoryAction $getGitHubRepositoryAction
+        GetGitHubRepositoryAction $getGitHubRepositoryAction,
+        GetReleaseVersionAction $getReleaseVersionAction
     ) {
         $this->resultStore = $resultStore;
         $this->health = $health;
         $this->getGitHubRepositoryAction = $getGitHubRepositoryAction;
+        $this->getReleaseVersionAction = $getReleaseVersionAction;
     }
 
     public function handle(): PortalHealthData
@@ -72,7 +76,7 @@ class GetPortalHealthAction
             $checks,
             new PortalHealthMetadataData(
                 (string) config('app.env'),
-                $this->nullableString(config('devops.version')),
+                $this->getReleaseVersionAction->handle(),
                 (new ParseSentryProjectIdAction($this->nullableString(config('devops.sentry_dsn'))))->handle(),
                 $this->getGitHubRepositoryAction->handle(),
                 new PortalHealthBackupData(

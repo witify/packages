@@ -10,6 +10,7 @@ use RuntimeException;
 use Spatie\Health\Commands\RunHealthChecksCommand;
 use Spatie\Health\Facades\Health;
 use Witify\Devops\Actions\GetGitHubRepositoryAction;
+use Witify\Devops\Actions\GetReleaseVersionAction;
 use Witify\Devops\Tests\Fixtures\TechnicalCheck;
 
 class DeveloperConsoleTest extends TestCase
@@ -23,7 +24,6 @@ class DeveloperConsoleTest extends TestCase
         config()->set([
             'app.name' => 'Client Example',
             'app.debug' => false,
-            'devops.version' => '2.4.0',
             'devops.sentry_dsn' => 'https://public-key@organization.ingest.sentry.io/123456',
         ]);
     }
@@ -58,14 +58,26 @@ class DeveloperConsoleTest extends TestCase
 
     public function test_it_shows_the_application_information(): void
     {
+        Cache::forever(GetReleaseVersionAction::CACHE_KEY, 'v2.4.0');
+
         $this->get('/devops')
             ->assertOk()
             ->assertSee('Client Example')
-            ->assertSee('2.4.0')
+            ->assertSee('<th>Version</th><td>v2.4.0</td>', false)
             ->assertSee(PHP_VERSION)
             ->assertSee(app()->version())
             ->assertSee('href="https://github.com/witify/sprintify"', false)
             ->assertSee('123456');
+    }
+
+    public function test_it_hides_the_version_until_the_portal_sends_one(): void
+    {
+        config()->set('devops.version', '9.9.9');
+
+        $this->get('/devops')
+            ->assertOk()
+            ->assertDontSee('<th>Version</th>', false)
+            ->assertDontSee('9.9.9');
     }
 
     public function test_it_tells_when_no_health_results_exist_yet(): void
