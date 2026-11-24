@@ -127,7 +127,9 @@
         <h2>{{ __('devops::console.application.title') }}</h2>
         <table>
             <tr><th>{{ __('devops::console.application.environment') }}</th><td>{{ $application->environment }}</td></tr>
-            <tr><th>{{ __('devops::console.application.version') }}</th><td>{{ $application->version ?? __('devops::console.application.unknown') }}</td></tr>
+            @if ($application->version)
+                <tr><th>{{ __('devops::console.application.version') }}</th><td>{{ $application->version }}</td></tr>
+            @endif
             <tr><th>{{ __('devops::console.application.php') }}</th><td>{{ $application->phpVersion }}</td></tr>
             <tr><th>{{ __('devops::console.application.laravel') }}</th><td>{{ $application->laravelVersion }}</td></tr>
             <tr><th>{{ __('devops::console.application.debug') }}</th><td>{{ $onOff($application->debug) }}</td></tr>

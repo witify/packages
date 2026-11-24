@@ -11,21 +11,26 @@ class GetApplicationInfoAction
 
     private GetGitHubRepositoryAction $getGitHubRepositoryAction;
 
-    public function __construct(Application $application, GetGitHubRepositoryAction $getGitHubRepositoryAction)
-    {
+    private GetReleaseVersionAction $getReleaseVersionAction;
+
+    public function __construct(
+        Application $application,
+        GetGitHubRepositoryAction $getGitHubRepositoryAction,
+        GetReleaseVersionAction $getReleaseVersionAction
+    ) {
         $this->application = $application;
         $this->getGitHubRepositoryAction = $getGitHubRepositoryAction;
+        $this->getReleaseVersionAction = $getReleaseVersionAction;
     }
 
     public function handle(): ApplicationInfoData
     {
-        $version = config('devops.version');
         $sentryDsn = config('devops.sentry_dsn');
 
         return new ApplicationInfoData(
             (string) config('app.name'),
             (string) config('app.env'),
-            is_string($version) && $version !== '' ? $version : null,
+            $this->getReleaseVersionAction->handle(),
             PHP_VERSION,
             $this->application->version(),
             (bool) config('app.debug'),

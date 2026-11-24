@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 use Spatie\Health\Commands\RunHealthChecksCommand;
 use Spatie\Health\Facades\Health;
 use Witify\Devops\Actions\GetGitHubRepositoryAction;
+use Witify\Devops\Actions\GetReleaseVersionAction;
 use Witify\Devops\Checks\FailedJobsCheck;
 use Witify\Devops\Models\FailedJob;
 use Witify\Devops\Tests\Fixtures\TechnicalCheck;
@@ -23,6 +24,7 @@ class PortalHealthControllerTest extends TestCase
 
         TechnicalCheck::$runCount = 0;
         Cache::forget(GetGitHubRepositoryAction::CACHE_KEY);
+        Cache::forget(GetReleaseVersionAction::CACHE_KEY);
 
         Schema::create('failed_jobs', function (Blueprint $table): void {
             $table->id();
@@ -38,7 +40,6 @@ class PortalHealthControllerTest extends TestCase
             'app.name' => 'Client Example',
             'app.env' => 'production',
             'devops.token' => 'expected-health-token',
-            'devops.version' => '1.0.0',
             'devops.sentry_dsn' => 'https://public-key@organization.ingest.sentry.io/123456',
             'filesystems.disks.backup.bucket' => 'client-backups',
             'backup.backup.name' => 'https---client-example-test',
@@ -95,7 +96,7 @@ class PortalHealthControllerTest extends TestCase
         $this->assertSame(1, TechnicalCheck::$runCount);
 
         $response = $this->withToken('expected-health-token')
-            ->getJson('/api/devops/health')
+            ->getJson('/api/devops/health', ['X-Release-Version' => 'v1.0.0'])
             ->assertOk()
             ->assertExactJson([
                 'app' => 'Client Example',
@@ -127,7 +128,7 @@ class PortalHealthControllerTest extends TestCase
                 ],
                 'meta' => [
                     'environment' => 'production',
-                    'sprintify_version' => '1.0.0',
+                    'sprintify_version' => 'v1.0.0',
                     'sentry_project_id' => 123456,
                     'github_repository' => 'witify/sprintify',
                     'backup' => [
@@ -167,7 +168,6 @@ class PortalHealthControllerTest extends TestCase
     public function test_it_reports_null_metadata_when_the_host_has_no_version_sentry_or_backup(): void
     {
         config()->set([
-            'devops.version' => null,
             'devops.sentry_dsn' => null,
             'filesystems.disks.backup.bucket' => null,
             'backup.backup.name' => null,
@@ -182,6 +182,59 @@ class PortalHealthControllerTest extends TestCase
             ->assertJsonPath('meta.sentry_project_id', null)
             ->assertJsonPath('meta.backup.bucket', null)
             ->assertJsonPath('meta.backup.prefix', null);
+    }
+
+    public function test_it_keeps_the_release_version_sent_by_the_portal(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-08-06 14:00:00', 'UTC'));
+
+        $this->assertReportedVersion(null, []);
+        $this->assertReportedVersion('v1.0.0', ['X-Release-Version' => 'v1.0.0']);
+        $this->assertReportedVersion('v1.0.0', []);
+        $this->assertReportedVersion('2.10.3', ['X-Release-Version' => '2.10.3']);
+
+        Carbon::setTestNow(Carbon::parse('2026-08-13 13:59:00', 'UTC'));
+        $this->assertReportedVersion('2.10.3', []);
+
+        Carbon::setTestNow(Carbon::parse('2026-08-13 14:01:00', 'UTC'));
+        $this->assertReportedVersion(null, []);
+    }
+
+    public function test_it_ignores_a_release_version_that_is_not_a_version(): void
+    {
+        $this->assertReportedVersion('v1.0.0', ['X-Release-Version' => 'v1.0.0']);
+
+        foreach (['', 'v1', '1.0', 'latest', 'v2.0.0-beta', '<b>v2.0.0</b>', "v2.0.0\n"] as $version) {
+            $this->assertReportedVersion('v1.0.0', ['X-Release-Version' => $version]);
+        }
+    }
+
+    public function test_it_ignores_the_release_version_of_a_request_with_a_wrong_token(): void
+    {
+        $this->withToken('incorrect-health-token')
+            ->getJson('/api/devops/health', ['X-Release-Version' => 'v6.6.6'])
+            ->assertForbidden();
+
+        $this->assertReportedVersion(null, []);
+    }
+
+    public function test_it_no_longer_reports_the_version_of_the_configuration(): void
+    {
+        config()->set('devops.version', '9.9.9');
+
+        $this->assertReportedVersion(null, []);
+    }
+
+    /**
+     * @param  array<string, string>  $headers
+     */
+    private function assertReportedVersion(?string $version, array $headers): void
+    {
+        $this->flushHeaders()
+            ->withToken('expected-health-token')
+            ->getJson('/api/devops/health', $headers)
+            ->assertOk()
+            ->assertJsonPath('meta.sprintify_version', $version);
     }
 
     public function test_it_returns_a_null_repository_when_the_git_config_disappears_before_reading(): void
