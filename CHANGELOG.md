@@ -2,11 +2,10 @@
 
 All notable changes to the packages are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and every package shares the same version number.
 
-## [Unreleased]
+## [1.6.0] - 2026-11-24
 
 ### Added
 
-- `witify/devops`: runs on Laravel 13. The `illuminate/*` constraints accept `^13.0`, the test suite runs on Testbench 11 and PHPUnit 12, and CI adds the PHP 8.4 + Laravel 13 pair.
 - `witify/devops`: the version of the application is its latest GitHub release. The portal sends it in the `X-Release-Version` header of the health request, the package keeps it in the cache and shows it in the developer console.
 
 ### Changed
@@ -16,6 +15,12 @@ All notable changes to the packages are documented here. The format follows [Kee
 ### Removed
 
 - `witify/devops`: `APP_VERSION` and the `devops.version` config key are no longer read. Remove both from the application.
+
+## [1.5.0] - 2026-10-14
+
+### Added
+
+- `witify/devops`: runs on Laravel 13. The `illuminate/*` constraints accept `^13.0`, the test suite runs on Testbench 11 and PHPUnit 12, and CI adds the PHP 8.4 + Laravel 13 pair.
 
 ## [1.4.1] - 2026-09-24
 
