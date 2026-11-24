@@ -93,6 +93,8 @@ class HealthServiceProvider extends ServiceProvider
 
 Keep only the checks that apply. An application without a queue worker has no `QueueCheck`, an application without Redis has no `RedisCheck`. The portal displays whatever the application reports.
 
+On Laravel Cloud, leave out `UsedDiskSpaceCheck`: the disk is the container's, rebuilt on every deploy and filled mostly by the deployed image, so its percentage warns about nothing you can act on. Laravel 11 and later detect Cloud with `laravel_cloud()`, for example `laravel_cloud() ? null : UsedDiskSpaceCheck::new()` in a list you filter.
+
 `BackupsCheck::onDisk()` builds the disk at boot, so an S3 disk without credentials crashes every request. Register the backup checks only when the disk is configured, for example `if (filled(config('filesystems.disks.backup.region')))`.
 
 Register the provider:
