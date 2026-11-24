@@ -24,8 +24,16 @@ final class ApplicationInfoData
 
     public ?string $githubRepository;
 
-    public ?int $sentryProjectId;
+    /**
+     * @var list<int>
+     */
+    public array $sentryProjectIds;
 
+    public HostingData $hosting;
+
+    /**
+     * @param  list<int>  $sentryProjectIds
+     */
     public function __construct(
         string $name,
         string $environment,
@@ -37,7 +45,8 @@ final class ApplicationInfoData
         bool $configurationCached,
         bool $routesCached,
         ?string $githubRepository,
-        ?int $sentryProjectId
+        array $sentryProjectIds,
+        HostingData $hosting
     ) {
         $this->name = $name;
         $this->environment = $environment;
@@ -49,7 +58,8 @@ final class ApplicationInfoData
         $this->configurationCached = $configurationCached;
         $this->routesCached = $routesCached;
         $this->githubRepository = $githubRepository;
-        $this->sentryProjectId = $sentryProjectId;
+        $this->sentryProjectIds = $sentryProjectIds;
+        $this->hosting = $hosting;
     }
 
     public function githubUrl(): ?string

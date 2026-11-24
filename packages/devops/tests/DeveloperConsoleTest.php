@@ -11,13 +11,19 @@ use Spatie\Health\Commands\RunHealthChecksCommand;
 use Spatie\Health\Facades\Health;
 use Witify\Devops\Actions\GetGitHubRepositoryAction;
 use Witify\Devops\Actions\GetReleaseVersionAction;
+use Witify\Devops\Tests\Concerns\InteractsWithEnvironmentVariables;
 use Witify\Devops\Tests\Fixtures\TechnicalCheck;
 
 class DeveloperConsoleTest extends TestCase
 {
+    use InteractsWithEnvironmentVariables;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->setEnvironmentVariable('LARAVEL_CLOUD', null);
+        $this->setEnvironmentVariable('LARAVEL_CLOUD_ENV_UUID', null);
 
         Cache::forever(GetGitHubRepositoryAction::CACHE_KEY, 'witify/sprintify');
 
@@ -25,12 +31,15 @@ class DeveloperConsoleTest extends TestCase
             'app.name' => 'Client Example',
             'app.debug' => false,
             'devops.sentry_dsn' => 'https://public-key@organization.ingest.sentry.io/123456',
+            'devops.sentry_additional_dsns' => [],
+            'devops.github_repository' => null,
         ]);
     }
 
     protected function tearDown(): void
     {
         Carbon::setTestNow();
+        $this->restoreEnvironmentVariables();
 
         parent::tearDown();
     }
@@ -67,7 +76,38 @@ class DeveloperConsoleTest extends TestCase
             ->assertSee(PHP_VERSION)
             ->assertSee(app()->version())
             ->assertSee('href="https://github.com/witify/sprintify"', false)
-            ->assertSee('123456');
+            ->assertSee('<th>Sentry project</th>', false)
+            ->assertSee('123456')
+            ->assertDontSee('<th>Hosting</th>', false);
+    }
+
+    public function test_it_shows_every_sentry_project_and_the_laravel_cloud_hosting(): void
+    {
+        config()->set([
+            'devops.sentry_additional_dsns' => ['https://frontend-key@organization.ingest.sentry.io/654321'],
+            'devops.github_repository' => 'witify/navark',
+        ]);
+        $this->setEnvironmentVariable('LARAVEL_CLOUD', '1');
+        $this->setEnvironmentVariable('LARAVEL_CLOUD_ENV_UUID', 'env-9f3c2b1a');
+
+        $this->get('/devops')
+            ->assertOk()
+            ->assertSee('href="https://github.com/witify/navark"', false)
+            ->assertSee('<th>Sentry projects</th>', false)
+            ->assertSee('123456, 654321')
+            ->assertSee('<th>Hosting</th>', false)
+            ->assertSee('Laravel Cloud')
+            ->assertSee('env-9f3c2b1a');
+    }
+
+    public function test_it_shows_an_unknown_sentry_project_without_a_dsn(): void
+    {
+        config()->set('devops.sentry_dsn', null);
+
+        $this->get('/devops')
+            ->assertOk()
+            ->assertSee('<th>Sentry project</th>', false)
+            ->assertSee('unknown');
     }
 
     public function test_it_hides_the_version_until_the_portal_sends_one(): void
