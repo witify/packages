@@ -13,20 +13,26 @@ class GetApplicationInfoAction
 
     private GetReleaseVersionAction $getReleaseVersionAction;
 
+    private GetSentryProjectIdsAction $getSentryProjectIdsAction;
+
+    private GetHostingAction $getHostingAction;
+
     public function __construct(
         Application $application,
         GetGitHubRepositoryAction $getGitHubRepositoryAction,
-        GetReleaseVersionAction $getReleaseVersionAction
+        GetReleaseVersionAction $getReleaseVersionAction,
+        GetSentryProjectIdsAction $getSentryProjectIdsAction,
+        GetHostingAction $getHostingAction
     ) {
         $this->application = $application;
         $this->getGitHubRepositoryAction = $getGitHubRepositoryAction;
         $this->getReleaseVersionAction = $getReleaseVersionAction;
+        $this->getSentryProjectIdsAction = $getSentryProjectIdsAction;
+        $this->getHostingAction = $getHostingAction;
     }
 
     public function handle(): ApplicationInfoData
     {
-        $sentryDsn = config('devops.sentry_dsn');
-
         return new ApplicationInfoData(
             (string) config('app.name'),
             (string) config('app.env'),
@@ -38,7 +44,8 @@ class GetApplicationInfoAction
             $this->application->configurationIsCached(),
             $this->application->routesAreCached(),
             $this->getGitHubRepositoryAction->handle(),
-            (new ParseSentryProjectIdAction(is_string($sentryDsn) ? $sentryDsn : null))->handle(),
+            $this->getSentryProjectIdsAction->handle(),
+            $this->getHostingAction->handle(),
         );
     }
 }

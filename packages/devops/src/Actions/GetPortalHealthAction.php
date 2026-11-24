@@ -23,16 +23,24 @@ class GetPortalHealthAction
 
     private GetReleaseVersionAction $getReleaseVersionAction;
 
+    private GetSentryProjectIdsAction $getSentryProjectIdsAction;
+
+    private GetHostingAction $getHostingAction;
+
     public function __construct(
         ResultStore $resultStore,
         Health $health,
         GetGitHubRepositoryAction $getGitHubRepositoryAction,
-        GetReleaseVersionAction $getReleaseVersionAction
+        GetReleaseVersionAction $getReleaseVersionAction,
+        GetSentryProjectIdsAction $getSentryProjectIdsAction,
+        GetHostingAction $getHostingAction
     ) {
         $this->resultStore = $resultStore;
         $this->health = $health;
         $this->getGitHubRepositoryAction = $getGitHubRepositoryAction;
         $this->getReleaseVersionAction = $getReleaseVersionAction;
+        $this->getSentryProjectIdsAction = $getSentryProjectIdsAction;
+        $this->getHostingAction = $getHostingAction;
     }
 
     public function handle(): PortalHealthData
@@ -78,7 +86,9 @@ class GetPortalHealthAction
                 (string) config('app.env'),
                 $this->getReleaseVersionAction->handle(),
                 (new ParseSentryProjectIdAction($this->nullableString(config('devops.sentry_dsn'))))->handle(),
+                $this->getSentryProjectIdsAction->handle(),
                 $this->getGitHubRepositoryAction->handle(),
+                $this->getHostingAction->handle(),
                 new PortalHealthBackupData(
                     $this->nullableString(config("filesystems.disks.{$backupDisk}.bucket")),
                     $this->nullableString(config('backup.backup.name')),

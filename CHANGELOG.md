@@ -2,6 +2,19 @@
 
 All notable changes to the packages are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and every package shares the same version number.
 
+## [Unreleased]
+
+### Added
+
+- `witify/devops`: `DEVOPS_GITHUB_REPOSITORY` (config key `github_repository`) sets the GitHub repository as `owner/repo`; a `https://github.com/owner/repo` URL is normalized and any other value is ignored. It wins over `.git/config`, which a deployment without a checkout lacks. On Laravel Cloud it is optional: the portal can read the repository from Laravel Cloud.
+- `witify/devops`: the health payload reports `meta.sentry_project_ids`, every Sentry project of the application once, the one of `sentry_dsn` first, then those of the new `sentry_additional_dsns` config key (`SENTRY_FRONTEND_DSN`, or `VITE_SENTRY_DSN` when it is empty, by default). `meta.sentry_project_id` is unchanged.
+- `witify/devops`: the health payload reports `meta.hosting`, with `provider` (`laravel_cloud` or `null`), `environment_id` and `commit_sha`, read from the variables Laravel Cloud injects.
+- `witify/devops`: the developer console shows every Sentry project and, on Laravel Cloud, the hosting and its environment id.
+
+### Fixed
+
+- `witify/devops`: a configured `DEVOPS_GITHUB_REPOSITORY` bypasses the cache; `.git/config` is the fallback, and only a repository found there is cached.
+
 ## [1.6.0] - 2026-11-24
 
 ### Added

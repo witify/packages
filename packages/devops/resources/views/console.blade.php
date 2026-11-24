@@ -146,7 +146,27 @@
                     @endif
                 </td>
             </tr>
-            <tr><th>{{ __('devops::console.application.sentry') }}</th><td>{{ $application->sentryProjectId ?? __('devops::console.application.unknown') }}</td></tr>
+            <tr>
+                <th>{{ trans_choice('devops::console.application.sentry', max(count($application->sentryProjectIds), 1)) }}</th>
+                <td>
+                    @if ($application->sentryProjectIds !== [])
+                        {{ implode(', ', $application->sentryProjectIds) }}
+                    @else
+                        <span class="muted">{{ __('devops::console.application.unknown') }}</span>
+                    @endif
+                </td>
+            </tr>
+            @if ($application->hosting->isLaravelCloud())
+                <tr>
+                    <th>{{ __('devops::console.application.hosting') }}</th>
+                    <td>
+                        {{ __('devops::console.application.laravel_cloud') }}
+                        @if ($application->hosting->environmentId)
+                            <span class="muted">{{ $application->hosting->environmentId }}</span>
+                        @endif
+                    </td>
+                </tr>
+            @endif
         </table>
     </div>
 

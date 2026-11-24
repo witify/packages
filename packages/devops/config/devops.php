@@ -19,6 +19,18 @@ return [
     'sentry_dsn' => env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN')),
 
     /*
+     * DSNs of the other Sentry projects of the application, such as the one of the
+     * frontend. Their project ids are reported to the portal after the one of `sentry_dsn`.
+     */
+    'sentry_additional_dsns' => array_values(array_filter([env('SENTRY_FRONTEND_DSN') ?: env('VITE_SENTRY_DSN')])),
+
+    /*
+     * GitHub repository of the application, as `owner/repo`. It wins over the `origin`
+     * remote of `.git/config`, which a deployment without a checkout (Laravel Cloud) lacks.
+     */
+    'github_repository' => env('DEVOPS_GITHUB_REPOSITORY'),
+
+    /*
      * Filesystem disk that receives the backups. Its bucket is reported to the portal,
      * together with the backup name of spatie/laravel-backup when it is installed.
      */

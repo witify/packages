@@ -2,7 +2,7 @@
 
 Health endpoint that reports the state of a Laravel application to the Witify portal.
 
-The package exposes `GET /api/devops/health`, protected by a bearer token. The response carries the latest results of the [spatie/laravel-health](https://github.com/spatie/laravel-health) checks registered by the application, plus the metadata the portal needs to link the application to its GitHub repository, Sentry project and backup bucket.
+The package exposes `GET /api/devops/health`, protected by a bearer token. The response carries the latest results of the [spatie/laravel-health](https://github.com/spatie/laravel-health) checks registered by the application, plus the metadata the portal needs to link the application to its GitHub repository, Sentry projects, hosting and backup bucket.
 
 It also ships two generic checks, `CpuCheck` and `FailedJobsCheck`, and the `ClientFacingCheck` base class for checks whose label and message are shown to the client in French and English.
 
@@ -33,6 +33,8 @@ PORTAL_HEALTH_TOKEN=
 `PORTAL_HEALTH_TOKEN` is the secret the portal sends. Generate a random one per application. The endpoint answers `404` while the token is empty, so nothing is exposed before you configure it.
 
 The version of the application needs no configuration: it is the latest GitHub release, which the portal sends with each health request (see [Release version](#release-version)).
+
+The GitHub repository is read from `.git/config`. A deployment without a checkout, such as Laravel Cloud, can set it with `DEVOPS_GITHUB_REPOSITORY=owner/repo`. On Laravel Cloud this is optional: the package reports the Laravel Cloud environment and the portal reads the repository from Laravel Cloud. When the frontend reports to its own Sentry project, `SENTRY_FRONTEND_DSN` (or `VITE_SENTRY_DSN` when `SENTRY_FRONTEND_DSN` is empty) adds it to the reported projects.
 
 ### 1. Configure laravel-health
 
@@ -169,7 +171,9 @@ Then add the application in the portal with the same token.
         "environment": "production",
         "sprintify_version": "1.0.0",
         "sentry_project_id": 123456,
+        "sentry_project_ids": [123456, 654321],
         "github_repository": "witify/client-example",
+        "hosting": { "provider": "laravel_cloud", "environment_id": "env-9f3c2b1a", "commit_sha": "a1b2c3d4e5f6" },
         "backup": { "bucket": "client-backups", "prefix": "https---client-example-com" }
     }
 }
@@ -178,8 +182,10 @@ Then add the application in the portal with the same token.
 - `checked_at` is `null` and `checks` is empty until `health:check` has stored results.
 - `label_client` and a bilingual `message` are present for `ClientFacingCheck` subclasses. Other checks report the message laravel-health stored, in both languages.
 - `sprintify_version` carries the [release version](#release-version) the portal sent, `null` when it sent none. The key name is part of the contract with the portal, whatever the application is.
-- `sentry_project_id` comes from `SENTRY_LARAVEL_DSN` or `SENTRY_DSN`.
-- `github_repository` is read from `.git/config` of the deployed checkout and cached for seven days.
+- `sentry_project_id` comes from `SENTRY_LARAVEL_DSN` or `SENTRY_DSN`, `null` when there is none.
+- `sentry_project_ids` lists every Sentry project of the application once: the one of `sentry_project_id` first, then those of `sentry_additional_dsns` (`SENTRY_FRONTEND_DSN` or `VITE_SENTRY_DSN` by default). It is empty when there is none.
+- `github_repository` is `DEVOPS_GITHUB_REPOSITORY` when it holds `owner/repo` (or a `https://github.com/owner/repo` URL, normalized). Otherwise it is read from the `origin` remote of `.git/config` in the deployed checkout and cached for seven days; a missing repository is not cached. A value that is neither is ignored.
+- `hosting` is always present. `provider` is `laravel_cloud` when the process runs on Laravel Cloud (`LARAVEL_CLOUD=1` or `LARAVEL_CLOUD_ENV_UUID` set), `null` elsewhere. `environment_id` is `LARAVEL_CLOUD_ENV_UUID`, `commit_sha` is `LARAVEL_CLOUD_COMMIT_SHA` or `LARAVEL_CLOUD_COMMIT`; both are `null` when absent.
 - `backup` reports the `bucket` of the backup disk and the backup name of spatie/laravel-backup. Both are `null` when absent.
 
 The response is sent with `Cache-Control: no-store, private`.
@@ -259,7 +265,7 @@ The package serves a developer console at `/devops` and the results page of lara
 | Laravel Telescope | `laravel/telescope` is installed | `config('telescope.path')` |
 | Logs | `opcodesio/log-viewer` or `arcanedev/log-viewer` is installed | the route path of the installed package |
 
-Below the tools, the page shows a summary of the latest health run, the application information (environment, [release version](#release-version), PHP and Laravel versions, debug and maintenance modes, cached configuration and routes, GitHub repository, Sentry project) and, when `sentry/sentry-laravel` is installed, a button that sends a test exception.
+Below the tools, the page shows a summary of the latest health run, the application information (environment, [release version](#release-version), PHP and Laravel versions, debug and maintenance modes, cached configuration and routes, GitHub repository, Sentry projects, and the Laravel Cloud environment when the application runs there) and, when `sentry/sentry-laravel` is installed, a button that sends a test exception.
 
 ### Echo test
 
@@ -324,16 +330,14 @@ php artisan vendor:publish --tag="devops-config"
 | `route.prefix` | `api/devops` | URL prefix of the endpoint |
 | `route.middleware` | `['api']` | middleware groups applied before the token check |
 | `sentry_dsn` | `env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN'))` | DSN parsed for the Sentry project id |
+| `sentry_additional_dsns` | `env('SENTRY_FRONTEND_DSN') ?: env('VITE_SENTRY_DSN')`, when set | DSNs of the other Sentry projects, such as the frontend one |
+| `github_repository` | `env('DEVOPS_GITHUB_REPOSITORY')` | GitHub repository as `owner/repo`, which wins over `.git/config` |
 | `backup_disk` | `backup` | filesystem disk whose `bucket` is reported |
 | `console.path` | `devops` | path of the developer console, `null` disables it |
 | `console.health_path` | `status` | path of the laravel-health results page, `null` disables it |
 | `console.middleware` | `['web', 'auth']` | middleware of both console pages |
 | `console.links` | `[]` | tool URLs to override or add |
 | `console.echo_channel` | `null` | private channel of the Echo test, `null` hides it |
-| `console.path` | `devops` | path of the developer console, `null` to disable |
-| `console.health_path` | `status` | path of the laravel-health results page, `null` to disable |
-| `console.middleware` | `['web', 'auth']` | middleware of both pages |
-| `console.links` | `[]` | URL overrides and extra tools of the console |
 
 Translations of the bundled checks and of the console can be published with `--tag="devops-translations"`.
 
